@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Surprise Quiz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #1e3a8a, #2563eb);
+            color: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        h1, h2 {
+            font-size: 2rem;
+            font-weight: 600;
+            margin: 0 0 20px;
+        }
+        button {
+            padding: 12px 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(145deg, #34d399, #10b981);
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.3s;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.4);
+        }
+        button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+        }
+        .container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+        .container.active {
+            display: flex;
+        }
+        .choices {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .fun-message {
+            font-size: 1.5rem;
+            color: #f87171;
+        }
+    </style>
+</head>
+<body>
+    <!-- Page 1 -->
+    <div id="page1" class="container active">
+        <h1>Are you Single or Taken?</h1>
+        <div class="choices">
+            <button onclick="goToPage2('single')">Single</button>
+            <button onclick="goToPage2('taken')">Taken</button>
+        </div>
+    </div>
+
+    <!-- Page 2 -->
+    <div id="page2" class="container">
+        <h1>Enter Your Nickname</h1>
+        <input type="text" id="nicknameInput" placeholder="Enter nickname (max 7 chars)" maxlength="7">
+        <button onclick="goToPage3()">Next</button>
+    </div>
+
+    <!-- Page 3 -->
+    <div id="page3" class="container">
+        <h2 id="nicknameGreeting"></h2>
+        <h2>Pick where you belong:</h2>
+        <div class="choices">
+            <button onclick="startQuestions('q1')">Iniwan</button>
+            <button onclick="startQuestions('q2')">Pinalitan</button>
+            <button onclick="startQuestions('q3')">Niloko</button>
+        </div>
+    </div>
+
+    <!-- Question Page -->
+    <div id="questionPage" class="container">
+        <h2 id="questionText"></h2>
+        <div class="choices">
+            <button onclick="answerQuestion('yes')">Yes</button>
+            <button onclick="answerQuestion('no')">No</button>
+        </div>
+    </div>
+
+    <!-- Page 4 -->
+    <div id="page4" class="container">
+        <h1 class="fun-message" id="funMessage"></h1>
+    </div>
+
+    <script>
+        let userStatus = "";
+        let userNickname = "";
+        let selectedLevel = "";
+        let currentQuestionIndex = 0;
+        const questionsData = {
+            q1: ["Ayos lang ba sa’yo na iniwan ka? Kasi mukhang masaya sila eh.", "Okay lang ba sa’yo na hindi ka na-prioritize? Siguro hindi ka talaga mahalaga", "Hindi ka ba nagtaka kung bakit hindi mo na nahanap ang closure na kailangan mo?"], 
+            q2: ["Masaya ka ba na may bago na sila? Siguro, hindi mo na rin kailangan maging priority.", "Okay lang ba na ginawang replacement ka lang? Mukhang mas magaan naman ang buhay nila ngayon.", "Hindi ka ba nagtataka kung bakit ikaw ang iniwan? Kasi parang wala namang explanation, eh."],
+            q3: ["Okay lang ba na ikaw lang ang naging tanga sa relasyon? Kasi mukhang sila okay pa.", "Hindi ka ba nagduda na baka hindi ka na mahal ng partner mo bago ka pa nila niloko?", "Hindi ka ba nagsisisi na hindi mo nakita ang mga sign bago ka nila lokohin?"]
+        };
+
+        function goToPage2(status) {
+            userStatus = status;
+            togglePage("page1", "page2");
+        }
+
+        function goToPage3() {
+            const nicknameInput = document.getElementById("nicknameInput").value.trim();
+            if (nicknameInput.length === 0) {
+                alert("Please enter a valid nickname.");
+            } else {
+                userNickname = nicknameInput;
+                document.getElementById("nicknameGreeting").textContent = `Hello, ${userNickname}!`;
+                togglePage("page2", userStatus === "taken" ? "page4" : "page3");
+                if (userStatus === "taken") {
+                    document.getElementById("funMessage").textContent = `Kupal ka kasi kaya ka taken, ${userNickname}!`;
+                }
+            }
+        }
+
+        function startQuestions(level) {
+            selectedLevel = level;
+            currentQuestionIndex = 0;
+            togglePage("page3", "questionPage");
+            displayQuestion();
+        }
+
+        function displayQuestion() {
+            const questionText = questionsData[selectedLevel][currentQuestionIndex];
+            document.getElementById("questionText").textContent = questionText;
+        }
+
+        function answerQuestion(answer) {
+            console.log(`Answered: ${answer}`);
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questionsData[selectedLevel].length) {
+                displayQuestion();
+            } else {
+                alert("Sorry✌!");
+                togglePage("questionPage", "page1");
+            }
+        }
+
+        function togglePage(hideId, showId) {
+            document.getElementById(hideId).classList.remove("active");
+            document.getElementById(showId).classList.add("active");
+        }
+    </script>
+</body>
+</html>
